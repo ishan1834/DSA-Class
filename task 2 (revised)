@@ -1,0 +1,91 @@
+class Product:
+    def __init__(self, sku, name, quantity):
+        self.sku = sku
+        self.name = name
+        self.quantity = quantity
+
+    def __str__(self):
+        return f"SKU: {self.sku}, Name: {self.name}, Quantity: {self.quantity}"
+
+
+class Inventory:
+    def __init__(self, capacity=100):
+        self.products = {}
+        self.capacity = capacity
+
+    def insert_product(self, sku, name, quantity):
+        if not name.strip():
+            return "Error: Product name cannot be empty."
+        if not isinstance(quantity, int):
+            return "Error: Invalid quantity."
+        if quantity <= 0:
+            return "Error: Quantity must be positive."
+        if len(self.products) >= self.capacity:
+            return "Error: Inventory capacity exceeded."
+        if sku in self.products:
+            return "Error: Duplicate SKU. Product already exists."
+        for p in self.products.values():
+            if p.name.lower() == name.lower():
+                return f"Error: Product with name '{name}' already exists."
+        self.products[sku] = Product(sku, name, quantity)
+        return f"Product {name} inserted successfully."
+
+    def update_quantity(self, sku, new_quantity):
+        if sku not in self.products:
+            return "Error: Product not found."
+        if not isinstance(new_quantity, int) or new_quantity <= 0:
+            return "Error: Invalid quantity."
+        self.products[sku].quantity = new_quantity
+        return f"Quantity for {sku} updated successfully."
+
+    def search_by_sku(self, sku):
+        return str(self.products.get(sku, "Error: Product not found."))
+
+    def search_by_name(self, name):
+        results = [str(p) for p in self.products.values() if p.name.lower() == name.lower()]
+        return "\n".join(results) if results else "Error: Product not found."
+
+    def delete_product(self, sku):
+        if sku in self.products:
+            removed = self.products.pop(sku)
+            return f"Product {removed.name} removed from inventory."
+        return "Error: Product not found."
+
+    def display_inventory(self):
+        if not self.products:
+            return "Inventory is empty."
+        return "\n".join(str(p) for p in self.products.values())
+
+    def process_sale(self, sku, qty_sold):
+        if sku not in self.products:
+            print(f"SKU {sku} not found in inventory.")
+            return
+        product = self.products[sku]
+        if product.quantity >= qty_sold:
+            product.quantity -= qty_sold
+            print(f"Sale processed: {qty_sold} units of SKU {sku}.")
+        else:
+            print(f"Insufficient stock for SKU {sku}. Available: {product.quantity}")
+
+    def identify_zero_stock(self):
+        zero_stock = [p.sku for p in self.products.values() if p.quantity == 0]
+        if zero_stock:
+            print(f"Zero stock SKUs: {zero_stock}")
+        else:
+            print("No zero stock items found.")
+        return zero_stock
+
+
+if __name__ == "__main__":
+    inv = Inventory(capacity=5)
+    inv.insert_product("P101", "Pencil", 50)
+    inv.insert_product("P102", "Pen", 20)
+    inv.insert_product("P103", "Eraser", 0)
+
+    inv.process_sale("P101", 30)
+    inv.process_sale("P102", 25)
+    inv.process_sale("P104", 10)
+
+    inv.identify_zero_stock()
+
+    print(inv.display_inventory())
