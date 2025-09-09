@@ -71,11 +71,3 @@ python inventory.py
 * Add GUI using Tkinter or PyQt
 * Integrate with barcode scanner
 
-```
-
----
-
-If you want, I can also make a **more “GitHub-friendly” version with badges, tables, and emojis**, so it looks really polished and eye-catching on your repository page.  
-
-Do you want me to do that?
-```
